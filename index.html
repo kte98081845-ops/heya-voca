@@ -282,7 +282,6 @@
         <div class="admin-title" onclick="toggleAdmin()">⚙️ [원장님 전용] 오늘 시험 단어장 교체 및 기록 관리</div>
         <div id="adminArea" style="display: none; margin-top: 12px;">
             
-            <!-- 단어장 프리셋 드롭다운 추가 -->
             <div style="margin-bottom: 12px;">
                 <label style="font-size: 12px; color: #475569;">📚 자주 쓰는 단어장 불러오기</label>
                 <select id="presetSelect" onchange="loadPresetWordBook()">
@@ -302,7 +301,6 @@
 </div>
 
 <script>
-    // 📚 미리 등록해 둔 반별/교재별 단어장 목록 (원장님이 마음껏 추가/수정 가능)
     const presetWordBooks = {
         "myeongji2_ch1": {
             "apple": "사과",
@@ -335,7 +333,47 @@
     let currentMode = 'mixed';
     let isMeaningHidden = false;
 
-    // 드롭다운에서 단어장 선택 시 텍스트 상자에 자동 로드
+    // 안드로이드/갤럭시 음성 엔진 초기화 처리
+    let synth = window.speechSynthesis;
+    let voices = [];
+
+    function populateVoices() {
+        if ('speechSynthesis' in window) {
+            voices = synth.getVoices();
+        }
+    }
+
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    // 🔊 갤럭시 호환 보완 원어민 TTS 함수
+    function speakWord(text) {
+        if (!('speechSynthesis' in window)) {
+            alert('크롬(Chrome)이나 사파리(Safari) 브라우저에서 실행해주세요!');
+            return;
+        }
+
+        try {
+            synth.cancel(); // 이전 음성 중지
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+
+            // 미국 영어 보이스가 존재하면 우선 지정
+            if (voices.length > 0) {
+                let enVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en'));
+                if (enVoice) utterance.voice = enVoice;
+            }
+
+            synth.speak(utterance);
+        } catch (e) {
+            console.error(e);
+            alert('기기 음성 엔진 오류입니다. 크롬 브라우저로 접속해 보세요!');
+        }
+    }
+
     function loadPresetWordBook() {
         let select = document.getElementById('presetSelect');
         let key = select.value;
@@ -347,19 +385,7 @@
             text += `${eng} = ${selectedBook[eng]}\n`;
         }
         document.getElementById('customWordsInput').value = text.trim();
-        updateWordList(); // 바로 화면에 자동 반영
-    }
-
-    function speakWord(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            let utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85;
-            window.speechSynthesis.speak(utterance);
-        } else {
-            alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
-        }
+        updateWordList();
     }
 
     function switchMainTab(tab) {
