@@ -238,7 +238,6 @@
         <button id="navQuiz" class="nav-btn" onclick="switchMainTab('quiz')">📝 단어 클리닉 시험장</button>
     </div>
 
-    <!-- [ 영역 1: 단어 학습관 ] -->
     <div id="studyView">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <span style="font-size: 13px; font-weight: 700; color: #475569;">오늘 외울 단어 (🔊 발음 클릭)</span>
@@ -248,7 +247,6 @@
         <button class="btn" style="margin-top: 15px; background: linear-gradient(135deg, #059669, #10b981);" onclick="switchMainTab('quiz')">대기 완료! 시험 치러 가기 ➔</button>
     </div>
 
-    <!-- [ 영역 2: 단어 클리닉 시험장 ] -->
     <div id="quizView" style="display: none;">
         <button class="history-toggle-btn" onclick="toggleHistory()">📊 이전 단어 시험 기록 전체보기 (클릭)</button>
         <div id="historyBox" class="history-box"></div>
@@ -277,11 +275,9 @@
         </div>
     </div>
 
-    <!-- 원장님 전용 관리 영역 -->
     <div class="admin-section">
         <div class="admin-title" onclick="toggleAdmin()">⚙️ [원장님 전용] 오늘 시험 단어장 교체 및 기록 관리</div>
         <div id="adminArea" style="display: none; margin-top: 12px;">
-            
             <div style="margin-bottom: 12px;">
                 <label style="font-size: 12px; color: #475569;">📚 자주 쓰는 단어장 불러오기</label>
                 <select id="presetSelect" onchange="loadPresetWordBook()">
@@ -333,44 +329,21 @@
     let currentMode = 'mixed';
     let isMeaningHidden = false;
 
-    // 안드로이드/갤럭시 음성 엔진 초기화 처리
-    let synth = window.speechSynthesis;
-    let voices = [];
-
-    function populateVoices() {
-        if ('speechSynthesis' in window) {
-            voices = synth.getVoices();
-        }
-    }
-
-    populateVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = populateVoices;
-    }
-
-    // 🔊 갤럭시 호환 보완 원어민 TTS 함수
+    // 카카오톡 내장 브라우저 충돌을 방지하는 완전 안전 TTS 함수
     function speakWord(text) {
         if (!('speechSynthesis' in window)) {
-            alert('크롬(Chrome)이나 사파리(Safari) 브라우저에서 실행해주세요!');
+            alert('기기 브라우저에서 음성 재생을 지원하지 않습니다.');
             return;
         }
 
         try {
-            synth.cancel(); // 이전 음성 중지
+            window.speechSynthesis.cancel();
             let utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
             utterance.rate = 0.85;
-
-            // 미국 영어 보이스가 존재하면 우선 지정
-            if (voices.length > 0) {
-                let enVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en'));
-                if (enVoice) utterance.voice = enVoice;
-            }
-
-            synth.speak(utterance);
+            window.speechSynthesis.speak(utterance);
         } catch (e) {
             console.error(e);
-            alert('기기 음성 엔진 오류입니다. 크롬 브라우저로 접속해 보세요!');
         }
     }
 
@@ -397,6 +370,7 @@
 
     function renderStudyList() {
         const container = document.getElementById('studyListContainer');
+        if (!container) return;
         container.innerHTML = '';
         
         for (let eng in originalWords) {
@@ -425,7 +399,8 @@
         for (let eng in originalWords) {
             text += `${eng} = ${originalWords[eng]}\n`;
         }
-        document.getElementById('customWordsInput').value = text.trim();
+        let inputElem = document.getElementById('customWordsInput');
+        if (inputElem) inputElem.value = text.trim();
     }
 
     function resetTestCount() {
@@ -446,6 +421,7 @@
 
     function renderQuiz() {
         const container = document.getElementById('quizContainer');
+        if (!container) return;
         container.innerHTML = '';
         let index = 0;
         
@@ -516,6 +492,7 @@
     function renderHistory() {
         let history = JSON.parse(localStorage.getItem('tingleWordRecords') || '[]');
         const box = document.getElementById('historyBox');
+        if (!box) return;
         
         if (history.length === 0) {
             box.innerHTML = '<div style="font-size:12px; color:#94a3b8; text-align:center;">저장된 이전 시험 기록이 없습니다.</div>';
@@ -536,7 +513,7 @@
 
     function toggleHistory() {
         const box = document.getElementById('historyBox');
-        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+        if (box) box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
 
     function gradeQuiz() {
@@ -686,10 +663,13 @@
         }
     }
 
-    initAdminInput();
-    renderStudyList();
-    renderQuiz();
-    renderHistory();
+    // 안전한 실행 순서
+    window.addEventListener('DOMContentLoaded', () => {
+        initAdminInput();
+        renderStudyList();
+        renderQuiz();
+        renderHistory();
+    });
 </script>
 
 </body>
