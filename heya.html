@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>혜야의 띵글 영어 | 1:1 맞춤 단어 클리닉</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); 
+            min-height: 100vh;
+            padding: 30px 15px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            margin: 0; 
+        }
+        .card { 
+            background: rgba(255, 255, 255, 0.96); 
+            backdrop-filter: blur(12px);
+            padding: 32px 28px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+            width: 100%; 
+            max-width: 520px; 
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .brand-header { text-align: center; margin-bottom: 20px; }
+        .brand-title { 
+            font-size: 26px; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, #2563eb, #7c3aed); 
+            -webkit-background-clip: text; 
+            background-clip: text;
+            -webkit-text-fill-color: transparent; 
+            margin: 0 0 6px 0;
+            letter-spacing: -0.5px;
+        }
+        .brand-sub { font-size: 13px; color: #64748b; font-weight: 500; }
+
+        .main-nav {
+            display: flex;
+            background: #cbd5e1;
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+        .nav-btn {
+            flex: 1;
+            padding: 12px 6px;
+            font-size: 14px;
+            font-weight: 800;
+            border: none;
+            background: transparent;
+            color: #475569;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .history-toggle-btn {
+            width: 100%;
+            padding: 10px;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+        .history-toggle-btn:hover { background: #e2e8f0; }
+
+        .history-box {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+        }
+        .history-item {
+            background: #ffffff;
+            border-left: 4px solid #4f46e5;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            font-size: 13px;
+        }
+        .history-item .date { font-size: 11px; color: #94a3b8; margin-bottom: 3px; }
+        .history-item .info { font-weight: 700; color: #1e293b; }
+
+        .study-card {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .study-eng { font-size: 18px; font-weight: 800; color: #1e1b4b; display: flex; align-items: center; gap: 8px; }
+        .study-kor { font-size: 15px; font-weight: 700; color: #475569; }
+        .study-kor.hidden { background: #e2e8f0; color: transparent; border-radius: 6px; user-select: none; cursor: pointer; }
+
+        .mode-toggle {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            gap: 4px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px 4px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .mode-btn.active {
+            background: #ffffff;
+            color: #1e1b4b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { font-weight: 700; font-size: 14px; color: #334155; display: block; margin-bottom: 8px; }
+        input[type="text"], select, textarea { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 1.5px solid #cbd5e1; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+        input[type="text"]:focus, select:focus { 
+            border-color: #4f46e5; 
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            outline: none; 
+        }
+        
+        .word-item { 
+            background: #ffffff; 
+            padding: 18px 20px; 
+            border-radius: 16px; 
+            margin-bottom: 14px; 
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: 0.2s; 
+        }
+        .word-item.correct { border-color: #22c55e; background: #f0fdf4; }
+        .word-item.wrong { border-color: #ef4444; background: #fef2f2; }
+        .word-type-tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #e0e7ff; color: #3730a3; margin-bottom: 6px; display: inline-block; }
+        .word-question { font-weight: 800; font-size: 17px; color: #0f172a; margin-bottom: 10px; }
+        .correct-ans-text { color: #dc2626; font-size: 13px; font-weight: 700; margin-top: 8px; }
+
+        .speak-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .speak-btn:hover { background: #e0e7ff; border-color: #818cf8; transform: scale(1.08); }
+
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            background: linear-gradient(135deg, #4f46e5, #3b82f6); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+            transition: 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(79, 70, 229, 0.4); }
+        .btn:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+        .btn-retest { background: linear-gradient(135deg, #e11d48, #f43f5e); box-shadow: 0 8px 20px rgba(225, 29, 72, 0.3); margin-top: 12px; }
+        .btn-copy { background: linear-gradient(135deg, #059669, #10b981); padding: 12px; font-size: 14px; margin-top: 10px; }
+
+        .result-box { 
+            margin-top: 24px; 
+            padding: 20px; 
+            border-radius: 16px; 
+            background: #f0fdf4; 
+            border: 1px solid #bbf7d0; 
+            display: none; 
+        }
+        .report-area { height: 120px; margin-top: 8px; font-size: 13px; color: #1e293b; background: #ffffff; resize: none; line-height: 1.5; }
+        
+        .admin-section { margin-top: 35px; border-top: 2px dashed #cbd5e1; padding-top: 20px; }
+        .admin-title { font-size: 13px; color: #64748b; font-weight: 700; cursor: pointer; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="brand-header">
+        <h1 class="brand-title">✨ 혜야의 띵글 영어 ✨</h1>
+        <div class="brand-sub">1:1 Premium Vocabulary Clinic System</div>
+    </div>
+
+    <div class="main-nav">
+        <button id="navStudy" class="nav-btn active" onclick="switchMainTab('study')">📖 오늘의 단어 학습관</button>
+        <button id="navQuiz" class="nav-btn" onclick="switchMainTab('quiz')">📝 단어 클리닉 시험장</button>
+    </div>
+
+    <!-- [ 영역 1: 단어 학습관 ] -->
+    <div id="studyView">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-size: 13px; font-weight: 700; color: #475569;">오늘 외울 단어 (🔊 발음 클릭)</span>
+            <button class="history-toggle-btn" style="width: auto; padding: 6px 12px; margin: 0; font-size: 12px;" onclick="toggleHideMeaning()">👁️ 뜻 가리기/보기</button>
+        </div>
+        <div id="studyListContainer"></div>
+        <button class="btn" style="margin-top: 15px; background: linear-gradient(135deg, #059669, #10b981);" onclick="switchMainTab('quiz')">대기 완료! 시험 치러 가기 ➔</button>
+    </div>
+
+    <!-- [ 영역 2: 단어 클리닉 시험장 ] -->
+    <div id="quizView" style="display: none;">
+        <button class="history-toggle-btn" onclick="toggleHistory()">📊 이전 단어 시험 기록 전체보기 (클릭)</button>
+        <div id="historyBox" class="history-box"></div>
+
+        <div class="mode-toggle">
+            <button id="modeMixed" class="mode-btn active" onclick="switchMode('mixed')">🔥 혼합 (스펠링+뜻)</button>
+            <button id="modeSpelling" class="mode-btn" onclick="switchMode('spelling')">영어 스펠링</button>
+            <button id="modeMeaning" class="mode-btn" onclick="switchMode('meaning')">한글 뜻</button>
+        </div>
+        
+        <div class="input-group">
+            <label for="studentName">학생 이름 / 학교·학년</label>
+            <input type="text" id="studentName" placeholder="예: 홍길동 (명지중 2)" oninput="resetTestCount()">
+        </div>
+
+        <div id="quizContainer"></div>
+
+        <button id="submitBtn" class="btn" onclick="gradeQuiz()">시험 제출 및 자동 채점</button>
+
+        <div id="resultBox" class="result-box">
+            <h3 id="scoreText" style="margin: 0 0 10px 0; color: #166534;"></h3>
+            <label style="color: #166534;">📱 학부모 전송용 카카오톡 리포트</label>
+            <textarea id="kakaoReport" class="report-area" readonly></textarea>
+            <button class="btn btn-copy" onclick="copyReport()">📋 카톡 리포트 1초 복사하기</button>
+            <button id="retestBtn" class="btn btn-retest" onclick="startRetest()" style="display:none;">🔥 틀린 단어 재시험 시작 (다음 차수)</button>
+        </div>
+    </div>
+
+    <!-- 원장님 전용 관리 영역 -->
+    <div class="admin-section">
+        <div class="admin-title" onclick="toggleAdmin()">⚙️ [원장님 전용] 오늘 시험 단어장 교체 및 기록 관리</div>
+        <div id="adminArea" style="display: none; margin-top: 12px;">
+            
+            <!-- 단어장 프리셋 드롭다운 추가 -->
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; color: #475569;">📚 자주 쓰는 단어장 불러오기</label>
+                <select id="presetSelect" onchange="loadPresetWordBook()">
+                    <option value="">-- 반별/교재별 단어장 선택 --</option>
+                    <option value="myeongji2_ch1">[중2] 교과서 Lesson 1</option>
+                    <option value="voca_day01">[능률보카] Day 01 기초 단어</option>
+                    <option value="high_essential">[고등] 수능 필수 고급 단어</option>
+                </select>
+            </div>
+
+            <p style="font-size: 12px; color: #64748b; margin-top:0;">줄마다 <b>영어 = 한글뜻</b> 형식으로 입력하세요.</p>
+            <textarea id="customWordsInput" style="height: 120px; font-size: 12px;"></textarea>
+            <button class="btn" style="background:#475569; padding: 10px; font-size: 13px; box-shadow:none;" onclick="updateWordList()">오늘의 단어 반영하기</button>
+            <button class="btn" style="background:#dc2626; padding: 8px; font-size: 12px; box-shadow:none; margin-top:8px;" onclick="clearHistory()">⚠️ 저장된 성적 기록 전체 삭제</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 📚 미리 등록해 둔 반별/교재별 단어장 목록 (원장님이 마음껏 추가/수정 가능)
+    const presetWordBooks = {
+        "myeongji2_ch1": {
+            "apple": "사과",
+            "banana": "바나나",
+            "cherry": "체리",
+            "date": "대추",
+            "elderberry": "엘더베리"
+        },
+        "voca_day01": {
+            "accentuate": "강조하다",
+            "vulnerable": "취약한",
+            "persistent": "끈질긴",
+            "meticulous": "꼼꼼한",
+            "substantial": "상당한"
+        },
+        "high_essential": {
+            "unprecedented": "전례 없는",
+            "metamorphosis": "변형, 변태",
+            "ubiquitous": "어디에나 있는",
+            "ephemeral": "덧없는, 짧은",
+            "pragmatic": "실용적인"
+        }
+    };
+
+    let originalWords = { ...presetWordBooks["voca_day01"] };
+    let currentWords = { ...originalWords };
+    let wrongWords = {};
+    let testCount = 1;
+    let scoreHistory = [];
+    let currentMode = 'mixed';
+    let isMeaningHidden = false;
+
+    // 드롭다운에서 단어장 선택 시 텍스트 상자에 자동 로드
+    function loadPresetWordBook() {
+        let select = document.getElementById('presetSelect');
+        let key = select.value;
+        if (!key || !presetWordBooks[key]) return;
+
+        let selectedBook = presetWordBooks[key];
+        let text = "";
+        for (let eng in selectedBook) {
+            text += `${eng} = ${selectedBook[eng]}\n`;
+        }
+        document.getElementById('customWordsInput').value = text.trim();
+        updateWordList(); // 바로 화면에 자동 반영
+    }
+
+    function speakWord(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+        }
+    }
+
+    function switchMainTab(tab) {
+        document.getElementById('navStudy').className = tab === 'study' ? 'nav-btn active' : 'nav-btn';
+        document.getElementById('navQuiz').className = tab === 'quiz' ? 'nav-btn active' : 'nav-btn';
+        document.getElementById('studyView').style.display = tab === 'study' ? 'block' : 'none';
+        document.getElementById('quizView').style.display = tab === 'quiz' ? 'block' : 'none';
+    }
+
+    function renderStudyList() {
+        const container = document.getElementById('studyListContainer');
+        container.innerHTML = '';
+        
+        for (let eng in originalWords) {
+            let kor = originalWords[eng];
+            let hiddenClass = isMeaningHidden ? 'study-kor hidden' : 'study-kor';
+            
+            container.innerHTML += `
+                <div class="study-card">
+                    <div class="study-eng">
+                        ${eng}
+                        <button class="speak-btn" type="button" title="발음 듣기" onclick="speakWord('${eng}')">🔊</button>
+                    </div>
+                    <div class="${hiddenClass}" onclick="this.classList.toggle('hidden')">${kor}</div>
+                </div>
+            `;
+        }
+    }
+
+    function toggleHideMeaning() {
+        isMeaningHidden = !isMeaningHidden;
+        renderStudyList();
+    }
+
+    function initAdminInput() {
+        let text = "";
+        for (let eng in originalWords) {
+            text += `${eng} = ${originalWords[eng]}\n`;
+        }
+        document.getElementById('customWordsInput').value = text.trim();
+    }
+
+    function resetTestCount() {
+        testCount = 1;
+        scoreHistory = [];
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('resultBox').style.display = 'none';
+    }
+
+    function switchMode(mode) {
+        currentMode = mode;
+        document.getElementById('modeMixed').className = mode === 'mixed' ? 'mode-btn active' : 'mode-btn';
+        document.getElementById('modeSpelling').className = mode === 'spelling' ? 'mode-btn active' : 'mode-btn';
+        document.getElementById('modeMeaning').className = mode === 'meaning' ? 'mode-btn active' : 'mode-btn';
+        resetTestCount();
+        renderQuiz();
+    }
+
+    function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        let index = 0;
+        
+        for (let eng in currentWords) {
+            let kor = currentWords[eng];
+            let isSpellingQuestion = (currentMode === 'spelling') || (currentMode === 'mixed' && index % 2 === 0);
+            
+            if (isSpellingQuestion) {
+                container.innerHTML += `
+                    <div class="word-item" id="item_${eng}">
+                        <span class="word-type-tag">🔤 영어 스펠링 맞추기</span>
+                        <div class="word-question">뜻: ${kor}</div>
+                        <input type="text" class="answer-input" data-key="${eng}" data-type="spelling" placeholder="영어 스펠링을 입력하세요" autocomplete="off">
+                        <div class="correct-ans-text" id="ans_${eng}" style="display:none;"></div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML += `
+                    <div class="word-item" id="item_${eng}">
+                        <span class="word-type-tag" style="background:#fef3c7; color:#92400e;">🇰🇷 한글 뜻 맞추기</span>
+                        <div class="word-question">단어: ${eng}</div>
+                        <input type="text" class="answer-input" data-key="${eng}" data-type="meaning" placeholder="한글 뜻을 입력하세요" autocomplete="off">
+                        <div class="correct-ans-text" id="ans_${eng}" style="display:none;"></div>
+                    </div>
+                `;
+            }
+            index++;
+        }
+    }
+
+    function sendToGoogleSheet(name, scoreVal, statusVal) {
+        const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfGaLiri5J2J0s0T4lUf3NNpD8X7dmyQEPwO7sBTuFLoAGXLQ/formResponse";
+        
+        let formData = new FormData();
+        formData.append("entry.1399837978", name);      
+        formData.append("entry.1292941444", scoreVal);  
+        formData.append("entry.266363851", statusVal);  
+
+        fetch(googleFormUrl, {
+            method: "POST",
+            mode: "no-cors",
+            body: formData
+        }).then(() => {
+            console.log("구글 스프레드시트 기록 완료!");
+        }).catch(err => console.error(err));
+    }
+
+    function saveResultToStorage(name, mode, score, total, isPassed) {
+        let history = JSON.parse(localStorage.getItem('tingleWordRecords') || '[]');
+        let now = new Date();
+        let dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        let modeLabel = mode === 'mixed' ? '혼합(스펠링+뜻)' : (mode === 'spelling' ? '영어 스펠링' : '한글 뜻');
+        
+        let record = {
+            date: dateStr,
+            name: name,
+            mode: modeLabel,
+            score: `${score}/${total}`,
+            status: isPassed ? '★ 100점 통과 ★' : `${testCount}차 시도 완료`
+        };
+        
+        history.unshift(record);
+        localStorage.setItem('tingleWordRecords', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        let history = JSON.parse(localStorage.getItem('tingleWordRecords') || '[]');
+        const box = document.getElementById('historyBox');
+        
+        if (history.length === 0) {
+            box.innerHTML = '<div style="font-size:12px; color:#94a3b8; text-align:center;">저장된 이전 시험 기록이 없습니다.</div>';
+            return;
+        }
+
+        let html = '';
+        history.forEach(item => {
+            html += `
+                <div class="history-item">
+                    <div class="date">[${item.date}] ${item.name} (${item.mode})</div>
+                    <div class="info">점수: ${item.score} | 상태: ${item.status}</div>
+                </div>
+            `;
+        });
+        box.innerHTML = html;
+    }
+
+    function toggleHistory() {
+        const box = document.getElementById('historyBox');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function gradeQuiz() {
+        const name = document.getElementById('studentName').value.trim();
+        if (!name) {
+            alert('학생 이름과 학교/학년을 입력해주세요!');
+            return;
+        }
+
+        const inputs = document.querySelectorAll('.answer-input');
+        let score = 0;
+        let total = Object.keys(currentWords).length;
+        wrongWords = {};
+
+        inputs.forEach(input => {
+            let key = input.getAttribute('data-key');
+            let qType = input.getAttribute('data-type');
+            let userAns = input.value.toLowerCase().trim();
+            let itemElem = document.getElementById(`item_${key}`);
+            let ansElem = document.getElementById(`ans_${key}`);
+
+            if (qType === 'spelling') {
+                let correctEng = key.toLowerCase().trim();
+                if (userAns === correctEng) {
+                    score++;
+                    itemElem.className = "word-item correct";
+                    ansElem.style.display = "none";
+                } else {
+                    wrongWords[key] = currentWords[key];
+                    itemElem.className = "word-item wrong";
+                    ansElem.style.display = "block";
+                    ansElem.innerText = `정답: ${key}`;
+                }
+            } else {
+                let correctKor = currentWords[key].trim();
+                if (userAns === correctKor) {
+                    score++;
+                    itemElem.className = "word-item correct";
+                    ansElem.style.display = "none";
+                } else {
+                    wrongWords[key] = currentWords[key];
+                    itemElem.className = "word-item wrong";
+                    ansElem.style.display = "block";
+                    ansElem.innerText = `정답: ${correctKor}`;
+                }
+            }
+        });
+
+        scoreHistory.push(`${testCount}차: ${score}/${total}점`);
+
+        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('scoreText').innerText = `[${testCount}차 시도] ${total}문제 중 ${score}개 정답!`;
+
+        let isPassed = Object.keys(wrongWords).length === 0;
+        let statusText = isPassed ? "★ 100점 최종 통과 ★" : `${testCount}차 시도 완료 (재시험 대기)`;
+
+        saveResultToStorage(name, currentMode, score, total, isPassed);
+        sendToGoogleSheet(name, `${score}/${total}`, `${testCount}차 시도: ${isPassed ? '통과' : '재시험'}`);
+
+        let modeLabel = currentMode === 'mixed' ? '통합 테스트 (스펠링+뜻)' : (currentMode === 'spelling' ? '영어 스펠링' : '한글 뜻');
+
+        let reportText = `[혜야의 띵글 영어] 단어 클리닉 리포트\n`;
+        reportText += `• 학생: ${name}\n`;
+        reportText += `• 시험 유형: ${modeLabel}\n`;
+        reportText += `• 진행 현황: ${scoreHistory.join(' ➔ ')}\n`;
+        reportText += `• 최종 결과: ${statusText}`;
+        
+        document.getElementById('kakaoReport').value = reportText;
+
+        document.getElementById('submitBtn').disabled = true;
+
+        if (!isPassed) {
+            document.getElementById('retestBtn').style.display = 'block';
+        } else {
+            document.getElementById('retestBtn').style.display = 'none';
+            alert(`축하합니다! ${name} 학생, 모든 문제를 ${testCount}차 시도 만에 완벽히 통과했습니다!`);
+        }
+    }
+
+    function startRetest() {
+        currentWords = { ...wrongWords };
+        testCount++;
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('resultBox').style.display = 'none';
+        renderQuiz();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyReport() {
+        const report = document.getElementById('kakaoReport');
+        report.select();
+        document.execCommand('copy');
+        alert('카톡 피드백 문구가 복사되었습니다!');
+    }
+
+    function toggleAdmin() {
+        const area = document.getElementById('adminArea');
+        if (area.style.display === 'block') {
+            area.style.display = 'none';
+            return;
+        }
+
+        let password = prompt("원장님 전용 비밀번호를 입력하세요:");
+        if (password === "1234") { 
+            area.style.display = 'block';
+        } else if (password !== null) {
+            alert("비밀번호가 올바르지 않습니다!");
+        }
+    }
+
+    function updateWordList() {
+        let text = document.getElementById('customWordsInput').value.trim();
+        if (!text) {
+            alert('교체할 단어를 입력해주세요!');
+            return;
+        }
+
+        let newWords = {};
+        let lines = text.split('\n');
+        lines.forEach(line => {
+            let parts = line.split('=');
+            if (parts.length === 2) {
+                let eng = parts[0].replace(/\s+/g, ' ').trim(); 
+                let kor = parts[1].replace(/\s+/g, ' ').trim(); 
+                if (eng && kor) newWords[eng] = kor;
+            }
+        });
+
+        if (Object.keys(newWords).length === 0) {
+            alert('단어 입력 형식이 올바르지 않습니다. (예: apple = 사과)');
+            return;
+        }
+
+        originalWords = newWords;
+        currentWords = { ...originalWords };
+        
+        resetTestCount();
+        renderStudyList();
+        renderQuiz();
+    }
+
+    function clearHistory() {
+        if (confirm("저장된 모든 학생 성적 기록을 정말로 삭제하시겠습니까?")) {
+            localStorage.removeItem('tingleWordRecords');
+            renderHistory();
+            alert("성적 기록이 전체 삭제되었습니다.");
+        }
+    }
+
+    initAdminInput();
+    renderStudyList();
+    renderQuiz();
+    renderHistory();
+</script>
+
+</body>
+</html>
